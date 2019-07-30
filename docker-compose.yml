@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./www/:/var/www/
+      - ./etc/php/5.6/php.ini:/etc/php/5.6/fpm/conf.d/php.ini
+      - ./etc/php/7.0/php.ini:/etc/php/7.0/fpm/conf.d/php.ini
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./etc/mysql_conf/my.cnf:/etc/my.cnf
+    ports:
+      - 3307:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD="yes"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - 8181:80
